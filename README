@@ -1,0 +1,28 @@
+基于microscope1.2.3版本修订的mysql connector java版本
+
+修改内容如下：
+1、修改com.mysql.jdbc包下面的类如下
+	1）PreparedStatement.java和StatementImpl.java中execute()、executeUpdate()和executeQuery()方法
+	2）MySQLConnection.java、ConnectionImpl.java和LoadBalancedMySQLConnection.java增加getHostPortPair()和getDatabase()方法
+
+2、在com.mysql.jdbc.vipshop.util包下增加MicroscopeUtil.java用户辅助microscope在mysql jdbc中的使用
+
+3、上传打包后mysql驱动到nexus，修改mvn_deploy.bat中classifier，并运行./mvn.deploy.bat可完成上传
+
+问题：
+考虑一下sql语句的过滤
+1、 /* count 1 */ select count(1) from user;
+2、 exec 存不存在
+
+
+注：
+1、从Oracle下载原生的mysql connector java驱动包，包含源代码
+2、修改系统环境变量的java版本为jdk1.5
+3、修改驱动包中build.xml中的property内容为jdk1.6版本，如下：
+	<property name="com.mysql.jdbc.java6.java"  value="D:/Program Files (x86)/Java/jdk1.6.0_38/bin/java.exe" />
+	<property name="com.mysql.jdbc.java6.javac" value="D:/Program Files (x86)/Java/jdk1.6.0_38/bin/javac.exe" />
+	<property name="com.mysql.jdbc.java6.rtjar" value="D:/Program Files (x86)/Java/jdk1.6.0_38/jre/lib/rt.jar" />
+4、加入microscope-framework.jar和microscope-trace.jar包到./src/lib/下（这两个jar包必须是jdk1.5版本）
+5、运行，ant命令
+6、打包上传至nexus
+	mvn deploy:deploy-file -DgroupId=mysql -DartifactId=mysql-connector-java -Dversion=5.1.29 -Dpackaging=jar -Dfile=./build/mysql-connector-java-5.1.29-SNAPSHOT/mysql-connector-java-5.1.29-SNAPSHOT-bin.jar -Dclassifier=microscope-1-2-3-03 -Dtype= -Durl=http://10.101.0.2:8081/nexus/content/repositories/thirdparty/ -DrepositoryId=thirdparty
